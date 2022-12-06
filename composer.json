@@ -1,0 +1,24 @@
+{
+    "name": "np-digital/api",
+    "description": "Penneo API wrapper for PHP",
+    "type": "package",
+    "require": {
+        "php": ">=7",
+        "symfony/dotenv": "*",
+        "penneo/penneo-sdk-php": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Lund",
+            "email": "cl@northernpartners.eu",
+            "homepage": "http://northernpartners.eu"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "NPDigital\\Api\\": "src/"
+        }
+    }
+}
