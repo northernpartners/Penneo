@@ -47,10 +47,26 @@ $response = Penneo::casefile()->create(
 echo $response;
 ```
 
+Create a draft with the same data.
+
+```php
+Penneo::casefile()->create(
+	title: 'Start Pebble employment contract', 
+	documents: $documents, 
+	signers: $signers
+)
+```
+
 Get a casefile `json` digest using a casefile id.
 
 ```php
 $response = Penneo::casefile( casefileId: 7466435 );
 
 echo $response;
+```
+
+Send a draft.
+
+```php
+Penneo::casefile( casefileId: 7466435 )->send();
 ```
