@@ -23,8 +23,9 @@ class Penneo {
         $this->response = null;
     }
 
-    static function casefile(Int $casefileId = 0){
-
+    static function casefile(
+        Int $casefileId = 0
+    ){
         $api = new Penneo();
 
         if ($casefileId > 0) {
@@ -40,8 +41,9 @@ class Penneo {
         return $api;
     }
 
-    static function document($documentId) 
-    {
+    static function document(
+        Int $documentId
+    ){
         $api = new Penneo();
         try {
             $api->document = Document::find($documentId);
@@ -99,7 +101,9 @@ class Penneo {
         return $this;
     }
 
-    public function addSigners(Array $signers){
+    public function addSigners(
+        Array $signers
+    ){
         foreach($signers AS $signer) {
             $this->addSigner(...$signer);
         }
@@ -141,7 +145,9 @@ class Penneo {
         SigningRequest::persist($SigningRequest);
     }
 
-    public function addDocuments(Array $documents){
+    public function addDocuments(
+        Array $documents
+    ){
         foreach($documents AS $document) {
             $this->addDocument(...$document);
         }

@@ -2,11 +2,17 @@
 
 ## Install
 
+	composer require np-digital/api
+
 ## Configure
 
 Copy `dist/.env` to the your root folder and add your Penneo key, secret and API endpoint.
 
-sandbox.penneo.com/api/v3/
+	PENNEO_API_KEY=
+	PENNEO_API_SECRET=
+	PENNEO_API_URI=
+
+Endpoints `sandbox.penneo.com/api/v3/`or `app.penneo.com/api/v3/`.
 
 ## Usage
 
@@ -37,7 +43,7 @@ Create a new casefile comtaining 2 documents and with 2 signers, who are contact
 
 	echo $response;
 
-Get a casefile digest using a casefile id.
+Get a casefile `json` digest using a casefile id.
 	
 	$response = Penneo::casefile( casefileId: 7466435 );
 
