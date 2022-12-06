@@ -3,7 +3,7 @@
     "description": "Penneo API wrapper for PHP",
     "type": "package",
     "require": {
-        "php": ">=7",
+        "php": ">=8",
         "symfony/dotenv": "*",
         "penneo/penneo-sdk-php": "^2.3"
     },
