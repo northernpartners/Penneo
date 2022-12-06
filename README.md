@@ -2,7 +2,9 @@
 
 ## Install
 
+```shell
 	composer require np-digital/api
+```
 
 ## Configure
 
@@ -18,6 +20,7 @@ Endpoints `sandbox.penneo.com/api/v3/`or `app.penneo.com/api/v3/`.
 
 Create a new casefile comtaining 2 documents and with 2 signers, who are contacted via email for document signing.
 
+```php
 	require_once ( $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php');
 
 	use Symfony\Component\Dotenv\Dotenv;
@@ -42,12 +45,12 @@ Create a new casefile comtaining 2 documents and with 2 signers, who are contact
 	)->send();
 
 	echo $response;
+```
 
 Get a casefile `json` digest using a casefile id.
-	
+
+```php
 	$response = Penneo::casefile( casefileId: 7466435 );
 
 	echo $response;
-
-
-
+```
