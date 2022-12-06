@@ -5,7 +5,7 @@
     "require": {
         "php": ">=7",
         "symfony/dotenv": "*",
-        "penneo/penneo-sdk-php": "dev-master"
+        "penneo/penneo-sdk-php": "^2.3"
     },
     "license": "MIT",
     "authors": [
