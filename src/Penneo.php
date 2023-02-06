@@ -54,6 +54,14 @@ class Penneo {
         return $api;
     }
 
+    function download()
+    {
+        if ($this->document) {
+            return $this->document->getPdf();
+        }
+        return false;
+    }
+
     public function create(
         String $title = '',
         Array $documents,
