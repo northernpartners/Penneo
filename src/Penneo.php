@@ -192,6 +192,10 @@ class Penneo {
 
     public function parse()
     {
+        if (!$this->getElement()) {
+            return false;
+        }
+
         $this->response = [
             'id' => $this->getElement()->getId(),
             'status' => $this->getElement()->getStatus(),
