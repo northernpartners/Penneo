@@ -5,13 +5,14 @@
     "require": {
         "php": ">=8",
         "symfony/dotenv": "*",
-        "penneo/penneo-sdk-php": "^2.3"
+        "penneo/penneo-sdk-php": "^2.",
+        "stilmark/parse": "^0."
     },
     "license": "MIT",
     "authors": [
         {
-            "name": "Christian Lund",
-            "email": "cl@northernpartners.eu",
+            "name": "Development",
+            "email": "development@northernpartners.eu",
             "homepage": "http://northernpartners.eu"
         }
     ],

@@ -4,6 +4,8 @@ namespace NPDigital\Api;
 
 use Penneo\SDK\ApiConnector;
 use Penneo\SDK\CaseFile;
+use Penneo\SDK\CaseFileTemplate;
+use Penneo\SDK\Folder;
 use Penneo\SDK\Document;
 use Penneo\SDK\Signer;
 use Penneo\SDK\SignatureLine;
@@ -35,7 +37,7 @@ class Penneo {
                 $api->casefile = false;
             }
         } else {
-            $api->casefile = new CaseFile();
+            $api->casefile = new CaseFile();            
         }
 
         return $api;
@@ -67,21 +69,28 @@ class Penneo {
         Array $documents,
         Array $signers,
         String $language = 'en',
-        Int $templateId = 0
+        Object $template = null,
+        Object $folder = null
     ){
         if ($this->casefile) {
             // Casefile meta data
             $this->casefile->setTitle($title);
             $this->casefile->setLanguage($language);
 
-            // Set template
-            $templates = $this->casefile->getCaseFileTemplates();
-            if (isset($templates[$templateId])) {
-                $this->casefile->setCaseFileTemplate($templates[$templateId]);
+            CaseFile::persist($this->casefile);
+
+            // Add template
+            if (!is_null($template)) {
+                $this->setTemplate($template);    
             }
 
-            CaseFile::persist($this->casefile);
+            // Add to folder
+            if (!is_null($folder)) {
+                $this->setFolder($folder); 
+            }
             
+            CaseFile::persist($this->casefile);
+
             // Add documents
             $this->addDocuments($documents);
 
@@ -153,6 +162,20 @@ class Penneo {
         SigningRequest::persist($SigningRequest);
     }
 
+    public function setFolder(
+        Folder $folder
+    ){
+        $folder->addCaseFile($this->casefile);
+        return $this;
+    }
+
+    public function setTemplate(
+        CaseFileTemplate $casefileTemplate
+    ){
+        $this->casefile->setCaseFileTemplate($casefileTemplate);
+        return $this;
+    }
+
     public function addDocuments(
         Array $documents
     ){
@@ -198,6 +221,57 @@ class Penneo {
         }
     }
 
+    public function getTemplates()
+    {
+        $casefileTemplates = $this->casefile->getCaseFileTemplates();
+
+        foreach($casefileTemplates AS $casefileTemplate) {
+            $templates[$casefileTemplate->getId()] = $casefileTemplate->getName();
+        }
+
+        return $templates;
+    }
+
+    public function getTemplate($arg) {
+
+        $templates = $this->casefile->getCaseFileTemplates();
+
+        if (is_int($arg)) {
+            $template = array_filter($templates, function ($obj) use ($arg) {
+                return $obj->getId() == $arg;
+            });
+        } elseif (is_string($arg)) {
+            $template = array_filter($templates, function ($obj) use ($arg) {
+                return $obj->getName() == $arg;
+            });
+        }
+
+        if ($template) {
+            return current($template);
+        }
+    }
+
+    public function getFolders()
+    {
+        return Folder::findAll();
+    }
+
+    public function getFolder($arg) {
+        if (is_int($arg)) {
+            return Folder::find($arg);
+        } elseif (is_string($arg)) {
+            $folder = Folder::findOneBy(['title' => $arg]);
+            if ($folder) {
+                return current($folder);    
+            }
+        }
+    }
+
+    public function showTemplate() {
+        $casefileTemplate = $this->casefile->getCaseFileTemplate();
+        return $this->parseTemplate($casefileTemplate);
+    }
+
     public function parse()
     {
         if (!$this->getElement()) {
@@ -223,6 +297,37 @@ class Penneo {
         }
 
         return $this;
+    }
+
+    public function parseTemplate(
+        Object $casefileTemplate
+    ){
+        $documentTypes = [];
+            
+        foreach($casefileTemplate->getDocumentTypes() AS $documentTypeKey => $documentType) {
+
+            $documentTypes[$documentTypeKey] = [
+                'id' => $documentType->getId(),
+                'name' => $documentType->getName(),
+            ];
+
+            $signerTypes = [];
+
+            foreach($documentType->getSignerTypes() AS $signerTypeKey => $signerType) {
+                $signerTypes[] = ['id' => $signerTypeKey, 'name' => $signerType->getName()];
+            }
+
+            if (count($signerTypes)) {
+                $documentTypes[$documentTypeKey]['signerTypes'] = $signerTypes;
+            }
+
+        }
+
+        return [
+            'id' => $casefileTemplate->getId(),
+            'name' => $casefileTemplate->getName(),
+            'documentTypes' => $documentTypes
+        ];
     }
 
     public function __toString()
