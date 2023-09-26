@@ -34,10 +34,10 @@ class Penneo {
             try {
                 $api->casefile = CaseFile::find($casefileId);
             } catch (Exception $e) {
-                $api->casefile = false;
+                $api->casefile = new CaseFile();
             }
         } else {
-            $api->casefile = new CaseFile();            
+            $api->casefile = new CaseFile();
         }
 
         return $api;
@@ -76,9 +76,7 @@ class Penneo {
             // Casefile meta data
             $this->casefile->setTitle($title);
             $this->casefile->setLanguage($language);
-
-            CaseFile::persist($this->casefile);
-
+            
             // Add template
             if (!is_null($template)) {
                 $this->setTemplate($template);    
@@ -88,14 +86,24 @@ class Penneo {
             if (!is_null($folder)) {
                 $this->setFolder($folder); 
             }
-            
-            CaseFile::persist($this->casefile);
+
+            // Purge documents and signers
+            foreach($this->casefile->getDocuments() AS $document) {
+                Document::delete($document);
+            }
+            foreach($this->casefile->getSigners() AS $signer) {
+                Signer::delete($signer);
+            }
 
             // Add documents
             $this->addDocuments($documents);
 
             // Add signers
             $this->addSigners($signers);
+
+            // Persist and refresh
+            CaseFile::persist($this->casefile);
+            $this->casefile = CaseFile::find($this->casefile->getId());
 
             // Add signatures to all documents
             foreach($this->casefile->getDocuments() AS $document) {
