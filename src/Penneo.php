@@ -76,6 +76,8 @@ class Penneo {
             // Casefile meta data
             $this->casefile->setTitle($title);
             $this->casefile->setLanguage($language);
+
+            CaseFile::persist($this->casefile);
             
             // Add template
             if (!is_null($template)) {
