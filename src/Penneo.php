@@ -284,7 +284,7 @@ class Penneo {
 
     public function parse()
     {
-        if (!$this->getElement()) {
+        if (!$this->getElement()->getId()) {
             return false;
         }
 
