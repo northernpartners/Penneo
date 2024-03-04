@@ -97,15 +97,13 @@ class Penneo {
                 Signer::delete($signer);
             }
 
+            CaseFile::persist($this->casefile);
+
             // Add documents
             $this->addDocuments($documents);
 
             // Add signers
             $this->addSigners($signers);
-
-            // Persist and refresh
-            CaseFile::persist($this->casefile);
-            $this->casefile = CaseFile::find($this->casefile->getId());
 
             // Add signatures to all documents
             foreach($this->casefile->getDocuments() AS $document) {
