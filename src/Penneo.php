@@ -119,6 +119,10 @@ class Penneo {
         }
     }
 
+    public function delete() {
+        CaseFile::delete($this->casefile);
+    }
+
     public function send(){
         if ($this->casefile) {
             $this->casefile->send();
