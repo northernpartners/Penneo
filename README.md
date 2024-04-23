@@ -89,6 +89,18 @@ Return a `CaseFileTemplate` object by name or id.
 $template = $casefile->getTemplate([$name | $id]);
 ```
 
+## Casefile getters
+
+Return all Casefile `Documents` by casefileId.
+```php
+$documents = Penneo::casefile( $casefileId )->getDocuments();
+```
+
+Return all Casefile `Signers` by casefileId.
+```php
+$documents = Penneo::casefile( $casefileId )->getSigners();
+```
+
 ## Helper functions
 
 Available folders
