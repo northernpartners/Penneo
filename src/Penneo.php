@@ -178,7 +178,7 @@ class Penneo {
         $signers = [];
         foreach ($this->casefile->getSigners() as $signer) {
             $request = $signer->getSigningRequest();
-            $signers[] = [
+            $signers[$signer->getId()] = [
                 'id' => $signer->getId(),
                 'name' => $signer->getName(),
                 'email' => $request->getEmail(),
@@ -233,7 +233,7 @@ class Penneo {
     public function getDocuments() {
         $documents = [];
         foreach ($this->casefile->getDocuments() as $document) {
-            $documents[] = [
+            $documents[$document->getId()] = [
                 'id' => $document->getId(),
                 'status' => $document->getStatus(),
                 'title' => $document->getTitle(),
