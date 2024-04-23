@@ -174,6 +174,22 @@ class Penneo {
         SigningRequest::persist($SigningRequest);
     }
 
+    public function getSigners() {
+        $signers = [];
+        foreach ($this->casefile->getSigners() as $signer) {
+            $request = $signer->getSigningRequest();
+            $signers[] = [
+                'id' => $signer->getId(),
+                'name' => $signer->getName(),
+                'email' => $request->getEmail(),
+                'status' => $request->getStatus(),
+                'rejectReason' => $request->getRejectReason(),
+                'assets' => $request->getLink()
+            ];
+        }
+        return $signers;
+    }
+
     public function setFolder(
         Folder $folder
     ){
@@ -212,6 +228,19 @@ class Penneo {
             $document->setDocumentType($documentTypes[$documentTypeId]);
         }
         Document::persist($document);
+    }
+
+    public function getDocuments() {
+        $documents = [];
+        foreach ($this->casefile->getDocuments() as $document) {
+            $documents[] = [
+                'id' => $document->getId(),
+                'status' => $document->getStatus(),
+                'title' => $document->getTitle(),
+                'created' => $document->getCreatedAt(),
+            ];
+        }
+        return $documents;
     }
 
     public function status()
@@ -298,14 +327,8 @@ class Penneo {
         ];
 
         if ($this->casefile) {
-            foreach ($this->casefile->getDocuments() as $document) {
-                $this->response['documents'][] = [
-                    'id' => $document->getId(),
-                    'status' => $document->getStatus(),
-                    'title' => $document->getTitle(),
-                    'created' => $document->getCreatedAt(),
-                ];
-            }
+            $this->response['documents'] = $this->getDocuments();
+            $this->response['signers'] = $this->getSigners();
         }
 
         return $this;
