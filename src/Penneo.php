@@ -9,6 +9,7 @@ use Penneo\SDK\Folder;
 use Penneo\SDK\Document;
 use Penneo\SDK\Signer;
 use Penneo\SDK\SignatureLine;
+use Penneo\SDK\CopyRecipient;
 use Penneo\SDK\SigningRequest;
 use Penneo\SDK\Exception;
 
@@ -68,7 +69,9 @@ class Penneo {
         String $title = '',
         Array $documents,
         Array $signers,
+        Array $copyRecipients = [],
         String $language = 'en',
+        String $reference = '',
         Object $template = null,
         Object $folder = null
     ){
@@ -76,6 +79,7 @@ class Penneo {
             // Casefile meta data
             $this->casefile->setTitle($title);
             $this->casefile->setLanguage($language);
+            $this->casefile->setReference($reference);
 
             CaseFile::persist($this->casefile);
             
@@ -95,6 +99,14 @@ class Penneo {
             }
             foreach($this->casefile->getSigners() AS $signer) {
                 Signer::delete($signer);
+            }
+
+            // Add copyRecipients
+            foreach($copyRecipients AS $copyRecipient) {
+                $ccRecipient = new CopyRecipient($this->casefile);    
+                $ccRecipient->setName($copyRecipient['name']);
+                $ccRecipient->setEmail($copyRecipient['email']);
+                CopyRecipient::persist($ccRecipient);
             }
 
             CaseFile::persist($this->casefile);
@@ -174,17 +186,53 @@ class Penneo {
         SigningRequest::persist($SigningRequest);
     }
 
+    public static function eventType(
+        $eventTypeId
+    ){
+
+        $eventTypes = [
+            0 => ['event' => 'requestSent', 'status' => 'pending'],
+            1 => ['event' => 'requestOpened', 'status' => 'pending'],
+            2 => ['event' => 'opened', 'status' => 'pending'],
+
+            3 => ['event' => 'signed', 'status' => 'pending'],
+            4 => ['event' => 'rejected', 'status' => 'rejected'],
+
+            7 => ['event' => 'requestActivated', 'status' => 'new'],
+        ];
+
+        /*
+            reminderSent    a signing reminder email has been sent
+            undeliverable   Penneo cannot send the emails to the signer, check the signer's address
+            finalized   the casefile this signer belongs to has been finalized
+            deleted the signer has been deleted
+        */
+
+        return $eventTypes[$eventTypeId] ?? $eventTypeId;
+    }
+
     public function getSigners() {
         $signers = [];
         foreach ($this->casefile->getSigners() as $signer) {
             $request = $signer->getSigningRequest();
+
+            $logs = $signer->getEventLog();
+            $eventLog = [];
+            foreach($logs AS $log) {
+                $eventLog[] = [
+                    'type' => self::eventType($log->getEventType()),
+                    'date' => $log->getEventTime()->format('Y-m-d H:i:s')
+                ];
+            }
+            
             $signers[$signer->getId()] = [
                 'id' => $signer->getId(),
                 'name' => $signer->getName(),
                 'email' => $request->getEmail(),
                 'status' => $request->getStatus(),
                 'rejectReason' => $request->getRejectReason(),
-                'assets' => $request->getLink()
+                'assets' => $request->getLink(),
+                'log' => $eventLog
             ];
         }
         return $signers;
