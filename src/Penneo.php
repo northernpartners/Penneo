@@ -194,19 +194,14 @@ class Penneo {
             0 => ['event' => 'requestSent', 'status' => 'pending'],
             1 => ['event' => 'requestOpened', 'status' => 'pending'],
             2 => ['event' => 'opened', 'status' => 'pending'],
-
             3 => ['event' => 'signed', 'status' => 'pending'],
             4 => ['event' => 'rejected', 'status' => 'rejected'],
-
+            5 => ['event' => 'reminderSent', 'status' => 'pending'],
+            6 => ['event' => 'undeliverable', 'status' => 'pending'],
             7 => ['event' => 'requestActivated', 'status' => 'new'],
+            8 => ['event' => 'finalized', 'status' => 'completed'],
+            9 => ['event' => 'deleted', 'status' => 'deleted'],
         ];
-
-        /*
-            reminderSent    a signing reminder email has been sent
-            undeliverable   Penneo cannot send the emails to the signer, check the signer's address
-            finalized   the casefile this signer belongs to has been finalized
-            deleted the signer has been deleted
-        */
 
         return $eventTypes[$eventTypeId] ?? $eventTypeId;
     }
